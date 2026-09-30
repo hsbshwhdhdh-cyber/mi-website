@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Navegador</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #000000, #4c1d95, #2563eb);
+      color: white;
+      text-align: center;
+      padding: 30px 15px;
+    }
+
+    .portal {
+      max-width: 420px;
+      margin: auto;
+      padding: 25px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 20px;
+    }
+
+    .logo {
+      font-size: 65px;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    input {
+      width: 90%;
+      padding: 13px;
+      margin: 7px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 95%;
+      padding: 14px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="portal">
+
+  <div class="logo">🚀</div>
+
+  <h1>Mi Navegador</h1>
+
+  <p>🌐 Bienvenido a mi website</p>
+
+  <input id="buscador" type="text" placeholder="Escribe el nombre...">
+
+  <button onclick="buscar()">🔎 Buscar</button>
+
+  <p id="mensaje"></p>
+
+  <input id="nombre" type="text" placeholder="Nombre de la página">
+
+  <input id="direccion" type="url" placeholder="https://ejemplo.com">
+
+  <button onclick="agregarPagina()">➕ Agregar página</button>
+
+  <div id="lista"></div>
+
+</div>
+
+<script>
+let paginas = JSON.parse(localStorage.getItem("paginas")) || {
+  wikipedia: "https://www.wikipedia.org/",
+  nasa: "https://www.nasa.gov/",
+  example: "https://www.example.com/",
+  khan: "https://www.khanacademy.org/"
+};
+
+function guardar() {
+  localStorage.setItem("paginas", JSON.stringify(paginas));
+}
+
+function buscar() {
+  const texto = document
+    .getElementById("buscador")
+    .value
+    .toLowerCase()
+    .trim();
+
+  const mensaje = document.getElementById("mensaje");
+
+  if (paginas[texto]) {
+    mensaje.textContent = "✅ Página autorizada. Abriendo...";
+    window.open(paginas[texto], "_blank");
+  } else {
+    mensaje.textContent = "🚫 Esa página no está autorizada.";
+  }
+}
+
+function agregarPagina() {
+  const nombre = document
+    .getElementById("nombre")
+    .value
+    .toLowerCase()
+    .trim();
+
+  const direccion = document
+    .getElementById("direccion")
+    .value
+    .trim();
+
+  if (!nombre || !direccion) {
+    alert("Escribe el nombre y la dirección.");
+    return;
+  }
+
+  try {
+    const url = new URL(direccion);
+
+    if (url.protocol !== "https:") {
+      alert("Usa una dirección que empiece con https://");
+      return;
+    }
+
+    paginas[nombre] = url.href;
+    guardar();
+
+    document.getElementById("mensaje").textContent =
+      "✅ Página agregada: " + nombre;
+
+    document.getElementById("nombre").value = "";
+    document.getElementById("direccion").value = "";
+
+    mostrarPaginas();
+  } catch {
+    alert("La dirección no es válida.");
+  }
+}
+
+function mostrarPaginas() {
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  for (const nombre in paginas) {
+    const boton = document.createElement("button");
+
+    boton.textContent = "🌐 " + nombre;
+
+    boton.onclick = function () {
+      window.open(paginas[nombre], "_blank");
+    };
+
+    lista.appendChild(boton);
+  }
+}
+
+mostrarPaginas();
+</script>
+
+</body>
+</html>
